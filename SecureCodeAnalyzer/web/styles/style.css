@@ -1,6 +1,7 @@
 .source{
-    width: 50%;
+    width: 46%;
     float: left;
+    padding: 0px 2%;
 }
 
 .result{
@@ -23,7 +24,8 @@ body{
     margin: 2px 2px;
     cursor: pointer;
     border: none;
-    transition: background-color 1s;    
+    transition: background-color 1s;  
+    font-family: 'Roboto', sans-serif;
 }
 
 .button:hover {
@@ -79,4 +81,8 @@ form{
 
 ::-webkit-scrollbar-thumb:hover {
     background: #999;  
+}
+
+.CodeMirror {
+    border: 2px inset #dee;
 }
