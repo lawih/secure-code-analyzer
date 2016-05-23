@@ -31,45 +31,56 @@
     </center>
 
     <div class="source">        
-        Copia aquí el código fuente:
+        Copy the source code here:
         <br>
         <br>
         <form method="post" enctype="multipart/form-data" action="SourceCodeServlet" id="sourcecodeform">
             <textarea name="sourcecode" id="java-code">
-${requestScope.utilOutput != null ? requestScope.utilOutput : "System.out.print(\"Aqui aparecera el codigo a analizar\");"}
+                ${requestScope.lastInput != null ? requestScope.lastInput : "System.out.print(\"Code to analize will appear here\");"}
             </textarea>
             <center>
                 <br>
                 <div class="fileUpload button">
-                    <span>O sube un archivo</span>
+                    <span>Or you can upload a file</span>
                     <input type="file" name="sourcefile" class="upload" onchange="readSingleFile(this)">
                 </div>
                 <br>
 
-                <input type="submit" class="button" value="Analizar código">
+                <input type="submit" class="button" value="Analize code">
             </center>
         </form>
     </div>
 
     <div class="result">
         <form method="post" action="" id="errorcodeform">
+            <h3>
+                <p>${requestScope.suggestionType}</p></h3>
+            <p>${requestScope.suggestionTypeURL == null ?  
+                 "You can learn about secure code <a target=\"_blank\" href=\"https://www.securecoding.cert.org/confluence/display/java/2+Rules\">here</a>." : requestScope.suggestionTypeURL}
+            </p>
+            <p>${requestScope.suggestionLine}</p></h3>
+            
+            <div class="myBox">                
+                <pre>
+                <code class="java">${requestScope.wrongcode != null ? requestScope.wrongcode : "System.out.print(\"Vulnerable code will appear here\");"}</code>
+                </pre>
+            </div>
+               
+            <br>
+            ${requestScope.recomendation != null ? "Consider changing your code to:" : "<br>"}
             <div class="myBox">
                 <pre>
-                <code class="java">${requestScope.utilOutput != null ? requestScope.utilOutput : "System.out.print(\"Aqui aparecera el codigo vulnerable\");"}</code>
+                    <code class="java">${requestScope.recomendation != null ? requestScope.recomendation : "System.out.print(\"Secure code will appear here\");"}</code>
                 </pre>
             </div>
             <center>
-                <input type="submit" class="button" value="Mejorar código">
+                <input type="submit" class="button" value="Improve code">
             </center>
         </form>
         <form method="post" action="" id="errorcodeform">
-            <div class="myBox">
-                <pre>
-                    <code class="java">${requestScope.utilOutput != null ? requestScope.utilOutput : "System.out.print(\"Aqui aparecera el codigo mejorado\");"}</code>
-                </pre>
-            </div>
+
             <center>
-                <input type="submit" class="button" value="Siguiente sugerencia">
+                <input type="submit" class="button" value="Next suggestion">
             </center>
         </form>          
     </div>
@@ -79,7 +90,7 @@ ${requestScope.utilOutput != null ? requestScope.utilOutput : "System.out.print(
             lineNumbers: true,
             matchBrackets: true,
             mode: "text/x-java",
-            theme: "neo" 
+            theme: "neo"
         });
     </script>
 </body>

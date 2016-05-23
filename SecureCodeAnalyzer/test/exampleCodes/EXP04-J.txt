@@ -1,0 +1,16 @@
+
+import java.io.IOException;
+import java.util.*;
+
+public class MainTest {
+
+    public static void main(String[] args) throws IOException {
+        HashSet<Short> s = new HashSet<Short>();
+        for (int i = 0; i < 10; i++) {
+            s.add((short) i); // Cast required so that the code compiles
+            s.remove(i); // Tries to remove an Integer
+        }
+        System.out.println(s.size());
+
+    }
+}

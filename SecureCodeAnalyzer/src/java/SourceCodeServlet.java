@@ -1,26 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
+import Algorithm.Response;
+import Controller.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import sun.misc.IOUtils;
 
-/**
- *
- * @author laura
- */
 @WebServlet(urlPatterns = {"/SourceCodeServlet"})
 @MultipartConfig
 public class SourceCodeServlet extends HttpServlet {
@@ -42,7 +31,7 @@ public class SourceCodeServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SourceCodeServlet</title>");            
+            out.println("<title>Servlet SourceCodeServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet SourceCodeServlet at " + request.getContextPath() + "</h1>");
@@ -77,21 +66,36 @@ public class SourceCodeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String source = request.getParameter( "sourcecode" );
-        /*Part sourceFile = request.getPart( "sourcefile" );
-        String fileName = sourceFile.getSubmittedFileName();
-        InputStream fileContent = sourceFile.getInputStream();
-        PrintWriter out = response.getWriter();
-        
-        Scanner s = new Scanner(fileContent).useDelimiter("\\A");
-        
-        String outputFile = "";
-        while( s.hasNext() ){
-            outputFile += s.next();
-            out.println("<br>");
+
+        // Code from the Text Area
+        String source = request.getParameter("sourcecode");
+
+        SuggestionController controller = new SuggestionController(source);
+        Response nextSuggestion = controller.getNextSuggestion();
+
+        // There are not suggestions
+        if (nextSuggestion.getLine() == -1) {
+
+            Type emptySuggestion = new Type("", "There are not suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
+            request.setAttribute("suggestionType", emptySuggestion.getDescription());
+            request.setAttribute("suggestionTypeURL", "You can learn about secure code <a target=\"_blank\" href=\""
+                    + emptySuggestion.getUrl() + "\">here</a>.");
+
+        } else {
+
+            Type suggestionType = controller.getTypes().get(nextSuggestion.getType());
+
+            request.setAttribute("suggestionType", suggestionType.getDescription());
+            request.setAttribute("suggestionTypeURL", "You can learn more <a target=\"_blank\" href=\""
+                    + suggestionType.getUrl() + "\">here</a>.");
+            request.setAttribute("suggestionLine", "The vulnerable line code is "
+                    + nextSuggestion.getLine() + ".");
+
+            request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
+            request.setAttribute("recomendation", nextSuggestion.getRecomendation());
         }
-        */
-        request.setAttribute("utilOutput", source);
+
+        request.setAttribute("lastInput", source);
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 

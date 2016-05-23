@@ -1,0 +1,13 @@
+
+import java.io.IOException;
+import java.util.*;
+
+public class MainTest {
+
+    public static void main(String[] args) throws IOException {
+        for (float x = 0.1f; x <= 1.0f; x += 0.1f) {
+            System.out.println(x);
+
+        }
+    }
+}
