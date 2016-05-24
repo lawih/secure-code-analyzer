@@ -79,41 +79,50 @@ public class SourceCodeServlet extends HttpServlet {
             System.out.println(s);
         }
         System.out.println("-----------------------");
-        */
-        
+         */
+
         SuggestionController controller = new SuggestionController(source);
-        Response nextSuggestion = controller.getNextSuggestion();        
+        Response nextSuggestion = controller.getNextSuggestion();
         List<Response> suggestions = controller.getSuggestions();
         Type suggestionType;
 
         int currentSuggestion;
-        
-        if ( request.getParameter("currentSuggestion").equals("") )
-            currentSuggestion = 0;        
-        else
+
+        if (request.getParameter("currentSuggestion").equals("")) {
+            currentSuggestion = 0;
+        } else {
             currentSuggestion = Integer.parseInt(request.getParameter("currentSuggestion"));
-        
-        System.out.println("Current sug: " + currentSuggestion);        
-        System.out.println("-----------------------");
-        
-        // There are not suggestions
-        if ( suggestions.isEmpty()) {
-            Type emptySuggestion = new Type("", "There are not suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
+        }
+
+        if (request.getParameter("analize") != null) {
+
+            // There are not suggestions
+            if (suggestions.isEmpty()) {
+                Type emptySuggestion = new Type("", "There are not suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
+                request.setAttribute("suggestionType", emptySuggestion.getDescription());
+                request.setAttribute("suggestionTypeURL", "You can learn about secure code <a target=\"_blank\" href=\""
+                        + emptySuggestion.getUrl() + "\">here</a>.");
+                request.setAttribute("currentSuggestion", currentSuggestion + 1);
+            } else {
+
+                suggestionType = controller.getTypes().get(nextSuggestion.getType());
+                request.setAttribute("currentSuggestion", 0);
+
+                request.setAttribute("suggestionType", suggestionType.getDescription());
+                request.setAttribute("suggestionTypeURL", "You can learn more <a target=\"_blank\" href=\""
+                        + suggestionType.getUrl() + "\">here</a>.");
+                request.setAttribute("suggestionLine", "The vulnerable line code is "
+                        + nextSuggestion.getLine() + ".");
+            }
+        } // There are no more suggestions
+        else if (currentSuggestion + 1 >= suggestions.size()) {
+            Type emptySuggestion = new Type("", "There are no more suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
             request.setAttribute("suggestionType", emptySuggestion.getDescription());
             request.setAttribute("suggestionTypeURL", "You can learn more about secure code <a target=\"_blank\" href=\""
                     + emptySuggestion.getUrl() + "\">here</a>.");
             request.setAttribute("currentSuggestion", currentSuggestion + 1);
-        }
-        // There are no more suggestions
-        else if ( currentSuggestion + 1 >= suggestions.size() ) {
-            Type emptySuggestion = new Type("", "There are no more suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
-            request.setAttribute("suggestionType", emptySuggestion.getDescription());
-            request.setAttribute("suggestionTypeURL", "You can learn about secure code <a target=\"_blank\" href=\""
-                    + emptySuggestion.getUrl() + "\">here</a>.");
-            request.setAttribute("currentSuggestion", currentSuggestion + 1);
-        } 
-        else {
-            
+        } else {
+
             // If user ask for next suggestion
             if (request.getParameter("next") != null) {
 
@@ -121,11 +130,11 @@ public class SourceCodeServlet extends HttpServlet {
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
 
                 request.setAttribute("currentSuggestion", currentSuggestion + 1);
-                System.out.println("-----------------------");  
-                System.out.println("Next: " + nextSuggestion.getWrongCode());
-                System.out.println("Current sug: " + (Integer) request.getAttribute("currentSuggestion"));        
                 System.out.println("-----------------------");
-                
+                System.out.println("Next: " + nextSuggestion.getWrongCode());
+                System.out.println("Current sug: " + (Integer) request.getAttribute("currentSuggestion"));
+                System.out.println("-----------------------");
+
             } else {
                 /*
             String wrongCode = nextSuggestion.getWrongCode();
@@ -154,9 +163,8 @@ public class SourceCodeServlet extends HttpServlet {
                  */
 
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
-                // Set list of suggestions
-                
-                request.setAttribute("currentSuggestion", currentSuggestion);
+
+                request.setAttribute("currentSuggestion", 0);
             }
 
             request.setAttribute("suggestionType", suggestionType.getDescription());
@@ -164,13 +172,10 @@ public class SourceCodeServlet extends HttpServlet {
                     + suggestionType.getUrl() + "\">here</a>.");
             request.setAttribute("suggestionLine", "The vulnerable line code is "
                     + nextSuggestion.getLine() + ".");
-            
-            System.out.println("Last Current sug: " + (Integer) request.getAttribute("currentSuggestion"));        
-            System.out.println("-----------------------");
-            
+
             request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
             request.setAttribute("recomendation", nextSuggestion.getRecomendation());
-            
+
         }
 
         /*
