@@ -3,6 +3,7 @@ import Algorithm.Response;
 import Controller.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -71,16 +72,6 @@ public class SourceCodeServlet extends HttpServlet {
         // Code from the Text Area
         String source = request.getParameter("sourcecode");
 
-        String lines[] = source.split("\n");
-        System.out.println("A call: \n");
-        /*
-        System.out.println("-----------------------");
-        for (String s : lines) {
-            System.out.println(s);
-        }
-        System.out.println("-----------------------");
-         */
-
         SuggestionController controller = new SuggestionController(source);
         Response nextSuggestion = controller.getNextSuggestion();
         List<Response> suggestions = controller.getSuggestions();
@@ -94,6 +85,10 @@ public class SourceCodeServlet extends HttpServlet {
             currentSuggestion = Integer.parseInt(request.getParameter("currentSuggestion"));
         }
 
+        // Set input code as last input to be shown again in page
+        request.setAttribute("lastInput", source);
+
+        // If user clicks on Analize code
         if (request.getParameter("analize") != null) {
 
             // There are not suggestions
@@ -104,7 +99,6 @@ public class SourceCodeServlet extends HttpServlet {
                         + emptySuggestion.getUrl() + "\">here</a>.");
                 request.setAttribute("currentSuggestion", currentSuggestion + 1);
             } else {
-
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
                 request.setAttribute("currentSuggestion", 0);
 
@@ -113,59 +107,49 @@ public class SourceCodeServlet extends HttpServlet {
                         + suggestionType.getUrl() + "\">here</a>.");
                 request.setAttribute("suggestionLine", "The vulnerable line code is "
                         + nextSuggestion.getLine() + ".");
+
+                request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
+                request.setAttribute("recomendation", nextSuggestion.getRecomendation());
             }
+        } // If user clicks on Improve code
+        else if (request.getParameter("improve") != null) {
+            if (nextSuggestion.getLine() != -1) {
+
+                request.setAttribute("lastInput", improveCode(source, nextSuggestion));
+
+                suggestionType = controller.getTypes().get(nextSuggestion.getType());
+
+                request.setAttribute("suggestionType", suggestionType.getDescription());
+                request.setAttribute("suggestionTypeURL", "You can learn more <a target=\"_blank\" href=\""
+                        + suggestionType.getUrl() + "\">here</a>.");
+                request.setAttribute("suggestionLine", "The vulnerable line code is "
+                        + nextSuggestion.getLine() + ".");
+
+                request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
+                request.setAttribute("recomendation", nextSuggestion.getRecomendation());
+                
+            } else {
+                request.setAttribute("suggestionType", getDefaultMessage().get(0));
+                request.setAttribute("suggestionTypeURL", getDefaultMessage().get(1));
+            }
+
+            request.setAttribute("currentSuggestion", -1);
         } // There are no more suggestions
         else if (currentSuggestion + 1 >= suggestions.size()) {
-            Type emptySuggestion = new Type("", "There are no more suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
-            request.setAttribute("suggestionType", emptySuggestion.getDescription());
-            request.setAttribute("suggestionTypeURL", "You can learn more about secure code <a target=\"_blank\" href=\""
-                    + emptySuggestion.getUrl() + "\">here</a>.");
+
+            request.setAttribute("suggestionType", getDefaultMessage().get(0));
+            request.setAttribute("suggestionTypeURL", getDefaultMessage().get(1));
             request.setAttribute("currentSuggestion", currentSuggestion + 1);
+
         } else {
 
-            // If user ask for next suggestion
+            // If user asks for next suggestion
             if (request.getParameter("next") != null) {
-
                 nextSuggestion = suggestions.get(currentSuggestion + 1);
-                suggestionType = controller.getTypes().get(nextSuggestion.getType());
-
                 request.setAttribute("currentSuggestion", currentSuggestion + 1);
-                System.out.println("-----------------------");
-                System.out.println("Next: " + nextSuggestion.getWrongCode());
-                System.out.println("Current sug: " + (Integer) request.getAttribute("currentSuggestion"));
-                System.out.println("-----------------------");
-
-            } else {
-                /*
-            String wrongCode = nextSuggestion.getWrongCode();
-            String recomendedCode = nextSuggestion.getRecomendation();
-            String resultingLine;
-            String resultingCode = "";
-            String preffix, suffix;
-            String line = lines[nextSuggestion.getLine()-1];
-            
-            line = line.replaceAll("\\s+","");            
-            int index = line.indexOf(wrongCode);
-            
-            preffix = line.substring(0, index);
-            suffix = line.substring( index + wrongCode.length() );
-            resultingLine = preffix + recomendedCode + suffix;
-            
-            lines[nextSuggestion.getLine()-1] = resultingLine;
-            for( String s : lines ){
-                resultingCode += s + "\n";
             }
-                
-            System.out.println("-----------------------");
-            System.out.println(preffix + recomendedCode + suffix);
-            System.out.println("-----------------------");
-            
-                 */
 
-                suggestionType = controller.getTypes().get(nextSuggestion.getType());
-
-                request.setAttribute("currentSuggestion", 0);
-            }
+            suggestionType = controller.getTypes().get(nextSuggestion.getType());
 
             request.setAttribute("suggestionType", suggestionType.getDescription());
             request.setAttribute("suggestionTypeURL", "You can learn more <a target=\"_blank\" href=\""
@@ -190,8 +174,52 @@ public class SourceCodeServlet extends HttpServlet {
             System.out.println("-----------------------");
             
          */
-        request.setAttribute("lastInput", source);
         request.getRequestDispatcher("/index.jsp").forward(request, response);
+    }
+
+    Type getEmptyType() {
+        return new Type("", "There are no more suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
+    }
+
+    List<String> getDefaultMessage() {
+        Type emptySuggestion = getEmptyType();
+        ArrayList<String> defaultMessage = new ArrayList<>();
+
+        defaultMessage.add(emptySuggestion.getDescription());
+        defaultMessage.add("You can learn more about secure code <a target=\"_blank\" href=\""
+                + emptySuggestion.getUrl() + "\">here</a>.");
+
+        return defaultMessage;
+    }
+
+    String improveCode(String source, Response nextSuggestion) {
+        String lines[] = source.split("\n");
+        String wrongCode = nextSuggestion.getWrongCode();
+        String recomendedCode = nextSuggestion.getRecomendation();
+        String resultingLine;
+        String resultingCode = "";
+        String preffix, suffix;
+        String line = lines[nextSuggestion.getLine() - 1];
+
+        line = line.replaceAll("\\s+", "");
+        int index = line.indexOf(wrongCode);
+
+        preffix = line.substring(0, index);
+        suffix = line.substring(index + wrongCode.length());
+        resultingLine = preffix + recomendedCode + suffix;
+
+        lines[nextSuggestion.getLine() - 1] = resultingLine;
+        for (String s : lines) {
+            resultingCode += s + "\n";
+        }
+
+        System.out.println("-----------------------");
+        System.out.println("wrong code: " + wrongCode);
+        System.out.println("rec code: " + recomendedCode);
+        System.out.println("result code: " + resultingCode);
+        System.out.println("-----------------------");
+
+        return resultingCode;
     }
 
     /**
