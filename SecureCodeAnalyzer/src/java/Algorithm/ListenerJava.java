@@ -39,7 +39,7 @@ public class ListenerJava extends Java8BaseListener {
 
     @Override
     public void enterAssertStatement(Java8Parser.AssertStatementContext ctx) {
-        System.out.println("enterAssertStatement");
+//        System.out.println("enterAssertStatement");
         inAssert = true;
 
     }
@@ -49,19 +49,19 @@ public class ListenerJava extends Java8BaseListener {
         // TODO Auto-generated method stub
         inAssert = false;
         if (badAssert) {
-            System.out.println(ctx.getText());
+//            System.out.println(ctx.getText());
             Response auxResult = new Response(ctx.getText(), UtilsF.getGoodAssert(ctx.getText(), "AssertBool" + countBooleanForAssert++), "", "EXP06-J", ctx.start.getLine());
             responses.add(auxResult);
             badAssert = false;
         }
-        System.out.println("exitAssertStatement");
+//        System.out.println("exitAssertStatement");
     }
 
     @Override
     public void enterVariableDeclarator(Java8Parser.VariableDeclaratorContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("enterVariableDeclarator");
-        System.out.println(ctx.getText());
+//        System.out.println("enterVariableDeclarator");
+//        System.out.println(ctx.getText());
         String cad = ctx.getText();
         if (UtilsF.isArray(ctx.getText())) {
             arraysName.add(UtilsF.nameOfArray(ctx.getText()));
@@ -74,8 +74,8 @@ public class ListenerJava extends Java8BaseListener {
 
     @Override
     public void enterMethodInvocation(Java8Parser.MethodInvocationContext ctx) {
-        System.out.println("enterMethodInvocation");
-        System.out.println(ctx.getText());
+//        System.out.println("enterMethodInvocation");
+//        System.out.println(ctx.getText());
         String aux;
         String cad = ctx.getText();
         for (final String cad1 : arraysName) {
@@ -112,16 +112,16 @@ public class ListenerJava extends Java8BaseListener {
     @Override
     public void enterMethodInvocation_lf_primary(Java8Parser.MethodInvocation_lf_primaryContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("enterMethodInvocation_lf_primary");
-        System.out.println(ctx.getText());
+//        System.out.println("enterMethodInvocation_lf_primary");
+//        System.out.println(ctx.getText());
         super.enterMethodInvocation_lf_primary(ctx);
     }
 
     @Override
     public void enterMethodInvocation_lfno_primary(Java8Parser.MethodInvocation_lfno_primaryContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("enterMethodInvocation_lfno_primary");
-        System.out.println(ctx.getText());
+//        System.out.println("enterMethodInvocation_lfno_primary");
+//        System.out.println(ctx.getText());
         if (inAssert) {
             badAssert = true;
         }
@@ -131,7 +131,7 @@ public class ListenerJava extends Java8BaseListener {
     @Override
     public void enterEnhancedForStatement(Java8Parser.EnhancedForStatementContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println(ctx.start.getLine());
+//        System.out.println(ctx.start.getLine());
         super.enterEnhancedForStatement(ctx);
         String cad = ctx.getText();
         String resp[];
@@ -146,21 +146,21 @@ public class ListenerJava extends Java8BaseListener {
     @Override
     public void enterClassInstanceCreationExpression(Java8Parser.ClassInstanceCreationExpressionContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("enterClassInstanceCreationExpression");
+//        System.out.println("enterClassInstanceCreationExpression");
         super.enterClassInstanceCreationExpression(ctx);
     }
 
     @Override
     public void enterClassInstanceCreationExpression_lf_primary(Java8Parser.ClassInstanceCreationExpression_lf_primaryContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("enterClassInstanceCreationExpression_lf_primary");
+//        System.out.println("enterClassInstanceCreationExpression_lf_primary");
         super.enterClassInstanceCreationExpression_lf_primary(ctx);
     }
 
     @Override
     public void enterClassInstanceCreationExpression_lfno_primary(
             Java8Parser.ClassInstanceCreationExpression_lfno_primaryContext ctx) {
-        System.out.println("enterClassInstanceCreationExpression_lfno_primary");
+//        System.out.println("enterClassInstanceCreationExpression_lfno_primary");
         String cad = ctx.getText();
         if (UtilsF.isBigDecimal(cad)) {
             if (!UtilsF.isAGoodNewBigDecimal(cad)) {
@@ -194,7 +194,7 @@ public class ListenerJava extends Java8BaseListener {
     public void enterLocalVariableDeclaration(Java8Parser.LocalVariableDeclarationContext ctx) {
         // TODO Auto-generated method stub
 
-        System.out.println("enterLocalVariableDeclaration");
+//        System.out.println("enterLocalVariableDeclaration");
         String cad = ctx.getText();
         String type = ctx.start.getText();
         String name = cad.split("=")[0].substring(type.length());

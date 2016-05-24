@@ -3,6 +3,7 @@ import Algorithm.Response;
 import Controller.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -70,31 +71,120 @@ public class SourceCodeServlet extends HttpServlet {
         // Code from the Text Area
         String source = request.getParameter("sourcecode");
 
+        String lines[] = source.split("\n");
+        System.out.println("A call: \n");
+        /*
+        System.out.println("-----------------------");
+        for (String s : lines) {
+            System.out.println(s);
+        }
+        System.out.println("-----------------------");
+        */
+        
         SuggestionController controller = new SuggestionController(source);
-        Response nextSuggestion = controller.getNextSuggestion();
+        Response nextSuggestion = controller.getNextSuggestion();        
+        List<Response> suggestions = controller.getSuggestions();
+        Type suggestionType;
 
+        int currentSuggestion;
+        
+        if ( request.getParameter("currentSuggestion").equals("") )
+            currentSuggestion = 0;        
+        else
+            currentSuggestion = Integer.parseInt(request.getParameter("currentSuggestion"));
+        
+        System.out.println("Current sug: " + currentSuggestion);        
+        System.out.println("-----------------------");
+        
         // There are not suggestions
-        if (nextSuggestion.getLine() == -1) {
-
+        if ( suggestions.isEmpty()) {
             Type emptySuggestion = new Type("", "There are not suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
+            request.setAttribute("suggestionType", emptySuggestion.getDescription());
+            request.setAttribute("suggestionTypeURL", "You can learn more about secure code <a target=\"_blank\" href=\""
+                    + emptySuggestion.getUrl() + "\">here</a>.");
+            request.setAttribute("currentSuggestion", currentSuggestion + 1);
+        }
+        // There are no more suggestions
+        else if ( currentSuggestion + 1 >= suggestions.size() ) {
+            Type emptySuggestion = new Type("", "There are no more suggestions for your code.", "https://www.securecoding.cert.org/confluence/display/java/2+Rules");
             request.setAttribute("suggestionType", emptySuggestion.getDescription());
             request.setAttribute("suggestionTypeURL", "You can learn about secure code <a target=\"_blank\" href=\""
                     + emptySuggestion.getUrl() + "\">here</a>.");
+            request.setAttribute("currentSuggestion", currentSuggestion + 1);
+        } 
+        else {
+            
+            // If user ask for next suggestion
+            if (request.getParameter("next") != null) {
 
-        } else {
+                nextSuggestion = suggestions.get(currentSuggestion + 1);
+                suggestionType = controller.getTypes().get(nextSuggestion.getType());
 
-            Type suggestionType = controller.getTypes().get(nextSuggestion.getType());
+                request.setAttribute("currentSuggestion", currentSuggestion + 1);
+                System.out.println("-----------------------");  
+                System.out.println("Next: " + nextSuggestion.getWrongCode());
+                System.out.println("Current sug: " + (Integer) request.getAttribute("currentSuggestion"));        
+                System.out.println("-----------------------");
+                
+            } else {
+                /*
+            String wrongCode = nextSuggestion.getWrongCode();
+            String recomendedCode = nextSuggestion.getRecomendation();
+            String resultingLine;
+            String resultingCode = "";
+            String preffix, suffix;
+            String line = lines[nextSuggestion.getLine()-1];
+            
+            line = line.replaceAll("\\s+","");            
+            int index = line.indexOf(wrongCode);
+            
+            preffix = line.substring(0, index);
+            suffix = line.substring( index + wrongCode.length() );
+            resultingLine = preffix + recomendedCode + suffix;
+            
+            lines[nextSuggestion.getLine()-1] = resultingLine;
+            for( String s : lines ){
+                resultingCode += s + "\n";
+            }
+                
+            System.out.println("-----------------------");
+            System.out.println(preffix + recomendedCode + suffix);
+            System.out.println("-----------------------");
+            
+                 */
+
+                suggestionType = controller.getTypes().get(nextSuggestion.getType());
+                // Set list of suggestions
+                
+                request.setAttribute("currentSuggestion", currentSuggestion);
+            }
 
             request.setAttribute("suggestionType", suggestionType.getDescription());
             request.setAttribute("suggestionTypeURL", "You can learn more <a target=\"_blank\" href=\""
                     + suggestionType.getUrl() + "\">here</a>.");
             request.setAttribute("suggestionLine", "The vulnerable line code is "
                     + nextSuggestion.getLine() + ".");
-
+            
+            System.out.println("Last Current sug: " + (Integer) request.getAttribute("currentSuggestion"));        
+            System.out.println("-----------------------");
+            
             request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
             request.setAttribute("recomendation", nextSuggestion.getRecomendation());
+            
         }
 
+        /*
+            if( suggestionType.getId().equals("DCL02-J") ){
+                int index = line.indexOf("for");
+                String out = line.substring(index);
+                request.setAttribute("wrongcode", out);
+            }
+
+            System.out.println("-----------------------");
+            System.out.println(lines[nextSuggestion.getLine()-1]);
+            System.out.println("-----------------------");
+            
+         */
         request.setAttribute("lastInput", source);
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }

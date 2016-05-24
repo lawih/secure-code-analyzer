@@ -49,9 +49,13 @@ public class SuggestionController {
     }
 
     public Response getNextSuggestion() {
-        if( currentIndex == -1 )
+        if( currentIndex == -1 || currentIndex >= suggestions.size() )
             return new Response("", "", "", "", -1);
         return suggestions.get(currentIndex++);
+    }
+    
+    public List<Response> getSuggestions() {
+        return suggestions;
     }
     
     private void fillTypes(){
