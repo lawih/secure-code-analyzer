@@ -1,0 +1,15 @@
+
+public class EXP06 
+{
+	public static String print = "Hello world";
+	public static void main(String[] args) 
+	{
+		assert f();
+		System.out.println(print);
+	}
+	public static boolean f()
+	{
+		print = "Hola mundo";
+		return true;
+	}
+}

@@ -186,7 +186,7 @@ public class UtilsF {
                 result+= lines[i];
                 result+="\n";
             }*/
-            if ( suggestion.getType().equals("DCL02-J"))
+            if ( suggestion.getType().equals("DCL02-J") || suggestion.getType().equals("EXP06-J"))
                 lines[nLine] = formatFor(lines[nLine]);
             lines[nLine] = lines[nLine].replace(suggestion.wrongCode, suggestion.recomendation);
             for( int i = 0; i < lines.length; i++ )
@@ -246,4 +246,11 @@ public class UtilsF {
 	       result = startSpaces + cad;
 	       return result;
 	    }
+
+    static boolean isFile(String cad) {
+        System.out.println("---"+cad) ;  
+        if ( (cad.split("="))[1].startsWith("newFile(")) return true;
+        return false;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

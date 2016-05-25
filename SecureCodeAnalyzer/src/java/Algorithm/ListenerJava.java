@@ -12,6 +12,7 @@ public class ListenerJava extends Java8BaseListener{
 	List<Response> responses;
 	Set<String> arraysName;
 	Set<Pair> collectionsName;
+        Set<String> FilesName;
 	SymbolTable symbolTable;
 	boolean inAssert;
 	boolean badAssert;
@@ -26,6 +27,7 @@ public class ListenerJava extends Java8BaseListener{
 		responses = new ArrayList<Response>();
 		arraysName = new TreeSet<String>();
 		collectionsName = new HashSet<Pair>();
+                FilesName = new HashSet<String>();
 		inAssert = false;
 		badAssert = false;
 		inForEach = 0;
@@ -74,6 +76,14 @@ public class ListenerJava extends Java8BaseListener{
 		{
 			collectionsName.add(new Pair(UtilsF.getNameCollection(cad), UtilsF.getTypeCollection(cad)));
 		}
+                if ( UtilsF.isFile(cad))
+                {
+                    
+                    System.out.println("addFilestart--------------");        
+                    FilesName.add(UtilsF.nameOfArray(ctx.getText()));
+                    System.out.println("addFile--------------");
+                            
+                }
 		super.enterVariableDeclarator(ctx);
 	}
 	@Override
@@ -98,6 +108,7 @@ public class ListenerJava extends Java8BaseListener{
 				}
 			}
 		}
+  
 		for( final Pair var : collectionsName )
 		{
 			String name = var.first;
@@ -133,10 +144,24 @@ public class ListenerJava extends Java8BaseListener{
 		// TODO Auto-generated method stub
 		System.out.println("enterMethodInvocation_lfno_primary");
 		System.out.println(ctx.getText());
+                String cad = ctx.getText();
 		if ( inAssert )
 		{
 			badAssert = true;
 		}
+                              for( final String var : FilesName )
+                {
+                    System.out.println("OOOOOOO   var:"+var);
+                            
+                    String auxF = var+".delete()";
+                    if ( cad.contains(auxF))
+                    {
+                        Response auxResponse = new Response(auxF, "if (!file.delete()) {\n" +
+"  System.out.println(\"Deletion failed\");\n" +
+"}", "", "FIO02-J", ctx.start.getLine());
+						responses.add(auxResponse);
+                    }
+                }
 		super.enterMethodInvocation_lfno_primary(ctx);
 	}
 	@Override
