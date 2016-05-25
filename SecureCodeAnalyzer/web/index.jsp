@@ -82,7 +82,7 @@
                     </c:when>    
                 </c:choose>
             </center>
-
+                <br>
             <center>
                 <input type="submit" name="next" class="button" value="Next suggestion">
             </center>    

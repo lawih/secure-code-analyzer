@@ -42,6 +42,10 @@ public class SuggestionController {
         ParseTreeWalker walker = new ParseTreeWalker();
         ListenerJava listener = new ListenerJava(parser);
         walker.walk(listener, compilationUnit);
+        
+        System.out.println("---------------");
+        System.out.println(listener.getResponses().size());
+        System.out.println("---------------");
 
         // List of suggestions
         suggestions = listener.getResponses();
@@ -83,6 +87,10 @@ public class SuggestionController {
         getTypes().put("NUM10-J", new Type("NUM10-J",
                 "Do not construct BigDecimal objects from floating-point literals.",
                 "https://www.securecoding.cert.org/confluence/display/java/NUM10-J.+Do+not+construct+BigDecimal+objects+from+floating-point+literals"));
+        
+        getTypes().put("FIO02-J", new Type("FIO02-J",
+                "Detect and handle file-related errors",
+                "https://www.securecoding.cert.org/confluence/display/java/FIO02-J.+Detect+and+handle+file-related+errors"));
     }
 
     public HashMap<String, Type> getTypes() {

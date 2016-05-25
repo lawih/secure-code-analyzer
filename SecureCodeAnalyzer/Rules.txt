@@ -1,0 +1,23 @@
+
+DCL02-J
+https://www.securecoding.cert.org/confluence/display/java/DCL02-J.+Do+not+modify+the+collection%27s+elements+during+an+enhanced+for+statement
+// en los foreach siempre colocar final al inicio for (final Integer i: list) {
+
+EXP02-J//x
+https://www.securecoding.cert.org/confluence/display/java/EXP02-J.+Do+not+use+the+Object.equals%28%29+method+to+compare+two+arrays
+// guardar que variables son arreglos y luego buscar .equals en el codigo
+
+EXP04-J//x
+https://www.securecoding.cert.org/confluence/display/java/EXP04-J.+Do+not+pass+arguments+to+certain+Java+Collections+Framework+methods+that+are+a+different+type+than+the+collection+parameter+type
+EXP06-J
+https://www.securecoding.cert.org/confluence/display/java/EXP06-J.+Expressions+used+in+assertions+must+not+produce+side+effects
+//mirar si en la expresion hay alguna funcion que cambie el estado del programa y si es asi crear un booleano anteriormente y guardar el resultado
+//tener en cuenta que se pueden llamar valores como A.B.C.D;
+
+NUM09-J
+https://www.securecoding.cert.org/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters
+NUM10-J
+https://www.securecoding.cert.org/confluence/display/java/NUM10-J.+Do+not+construct+BigDecimal+objects+from+floating-point+literals
+
+
+
