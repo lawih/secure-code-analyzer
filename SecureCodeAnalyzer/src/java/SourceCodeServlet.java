@@ -71,6 +71,7 @@ public class SourceCodeServlet extends HttpServlet {
 
         // Code from the Text Area
         String source = request.getParameter("sourcecode");
+        System.out.println(source);
 
         SuggestionController controller = new SuggestionController(source);
         Response nextSuggestion = controller.getNextSuggestion();
@@ -87,6 +88,7 @@ public class SourceCodeServlet extends HttpServlet {
 
         // Set input code as last input to be shown again in page
         request.setAttribute("lastInput", source);
+        request.setAttribute("improveCode",true);
 
         // If user clicks on Analize code
         if (request.getParameter("analize") != null) {
@@ -98,6 +100,7 @@ public class SourceCodeServlet extends HttpServlet {
                 request.setAttribute("suggestionTypeURL", "You can learn about secure code <a target=\"_blank\" href=\""
                         + emptySuggestion.getUrl() + "\">here</a>.");
                 request.setAttribute("currentSuggestion", currentSuggestion + 1);
+                request.setAttribute("improveCode", null);
             } else {
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
                 request.setAttribute("currentSuggestion", 0);
@@ -114,8 +117,10 @@ public class SourceCodeServlet extends HttpServlet {
         } // If user clicks on Improve code
         else if (request.getParameter("improve") != null) {
             if (nextSuggestion.getLine() != -1) {
+                
+                String newSource = Algorithm.UtilsF.correctCode(source, nextSuggestion);
 
-                request.setAttribute("lastInput", improveCode(source, nextSuggestion));
+                request.setAttribute("lastInput", newSource );
 
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
 
@@ -127,10 +132,12 @@ public class SourceCodeServlet extends HttpServlet {
 
                 request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
                 request.setAttribute("recomendation", nextSuggestion.getRecomendation());
+                request.setAttribute("improveCode", null);
                 
             } else {
                 request.setAttribute("suggestionType", getDefaultMessage().get(0));
                 request.setAttribute("suggestionTypeURL", getDefaultMessage().get(1));
+                request.setAttribute("improveCode", null);
             }
 
             request.setAttribute("currentSuggestion", -1);
@@ -140,6 +147,7 @@ public class SourceCodeServlet extends HttpServlet {
             request.setAttribute("suggestionType", getDefaultMessage().get(0));
             request.setAttribute("suggestionTypeURL", getDefaultMessage().get(1));
             request.setAttribute("currentSuggestion", currentSuggestion + 1);
+            request.setAttribute("improveCode", null);
 
         } else {
 
@@ -159,7 +167,7 @@ public class SourceCodeServlet extends HttpServlet {
 
             request.setAttribute("wrongcode", nextSuggestion.getWrongCode());
             request.setAttribute("recomendation", nextSuggestion.getRecomendation());
-
+            
         }
 
         /*

@@ -1,0 +1,26 @@
+import java.util.*;
+
+public class Main 
+{
+	static Set<Integer> mySet = new HashSet<Integer>();
+	public static void main(String[] args) {
+		
+		for( Integer var : mySet )
+		{
+			System.out.println(var);
+		}
+		Node myNode = new Node();
+		for( Double var : myNode.l )
+		{
+			
+		}
+	}
+	static class Node
+	{
+		public static List<Double> l;
+		public Node()
+		{
+			l = new ArrayList<Double>();
+		}
+	}
+}

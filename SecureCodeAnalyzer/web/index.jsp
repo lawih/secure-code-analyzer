@@ -4,6 +4,7 @@
     Author     : laura
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="Algorithm.Response"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -73,11 +74,16 @@
                     <code class="java">${requestScope.recomendation != null ? requestScope.recomendation : "System.out.print(\"Secure code will appear here\");"}</code>
                 </pre>
             </div>
+            
             <center>
-                <input type="submit" name="improve" class="button" value="Improve code">
+                <c:choose>
+                    <c:when test="${requestScope.improveCode != null}">
+                        <input type="submit" name="improve" class="button" value="Improve code"> 
+                    </c:when>    
+                </c:choose>
             </center>
+
             <center>
-                
                 <input type="submit" name="next" class="button" value="Next suggestion">
             </center>    
         </div>

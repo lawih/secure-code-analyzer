@@ -1,0 +1,81 @@
+import java.util.*;
+
+public class Main 
+{
+	static Set<Integer> mySet = new HashSet<Integer>();
+	public static void main(String[] args) {
+		int n = 10;
+		List<Node> ln = new ArrayList<Node>();
+		Set<Node> sn = new HashSet<Node>();
+		Node arrayn[] = new Node[n];
+		for( int i = 0; i < n; i++ )
+		{
+			ln.add(new Node(n));
+			sn.add(new Node(n));
+			arrayn[i] = new Node(n);
+		}
+		for(Node varNode :  ln )
+		{
+			Integer ext = new Integer();
+			for(Integer var : varNode.li )
+			{
+				System.out.println(var);
+			}
+			for(Integer var : varNode.si )
+			{
+				System.out.println(var);
+			}
+			for(Integer var : varNode.arrayi )
+			{
+				System.out.println(var);
+			}	
+		}
+
+		
+	}
+	public static class Node
+	{
+		List<Integer> li;
+		List<Double> ld;
+		List<Character> lc;
+		List<String> ls;
+		Set<Integer> si;
+		Set<Double> sd;
+		Set<Character> sc;
+		Set<String> ss;
+		int arrayi[];
+		double arrayd[];
+		char arrayc[];
+		String arrays[];
+		public Node(int n)
+		{
+			li = new ArrayList<Integer>();
+			ld = new ArrayList<Double>();
+			lc = new ArrayList<Character>();
+			ls = new ArrayList<String>();
+			si = new HashSet<Integer>();
+			sd = new HashSet<Double>();
+			sc = new HashSet<Character>();
+			ss = new HashSet<String>();
+			arrayi = new int[n];
+			arrayd = new double[n];
+			arrayc = new char[n];
+			arrays = new String[n];
+			for( int i = 0; i < n; i++ )
+			{
+				li.add(i);
+				ld.add((double)i);
+				lc.add((char)i);
+				ls.add(""+i);
+				si.add(i);
+				sd.add((double)i);
+				sc.add((char)i);
+				ss.add(""+i);
+				arrayi[i] = i;
+				arrayd[i] = (double)i;
+				arrayc[i] = (char)i;
+				arrays[i] = ""+i;
+			}
+		}
+	}
+}
