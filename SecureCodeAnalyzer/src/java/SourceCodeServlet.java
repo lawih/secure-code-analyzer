@@ -73,9 +73,9 @@ public class SourceCodeServlet extends HttpServlet {
         String source = request.getParameter("sourcecode");
         System.out.println(source);
 
-        SuggestionController controller = new SuggestionController(source);
-        Response nextSuggestion = controller.getNextSuggestion();
+        SuggestionController controller = new SuggestionController(source);        
         List<Response> suggestions = controller.getSuggestions();
+        Response nextSuggestion;
         Type suggestionType;
 
         int currentSuggestion;
@@ -85,6 +85,11 @@ public class SourceCodeServlet extends HttpServlet {
         } else {
             currentSuggestion = Integer.parseInt(request.getParameter("currentSuggestion"));
         }
+        
+        if( currentSuggestion < suggestions.size() )
+            nextSuggestion = suggestions.get(currentSuggestion);
+        else
+            nextSuggestion = controller.getNextSuggestion();
 
         // Set input code as last input to be shown again in page
         request.setAttribute("lastInput", source);
@@ -102,6 +107,7 @@ public class SourceCodeServlet extends HttpServlet {
                 request.setAttribute("currentSuggestion", currentSuggestion + 1);
                 request.setAttribute("improveCode", null);
             } else {
+                
                 suggestionType = controller.getTypes().get(nextSuggestion.getType());
                 request.setAttribute("currentSuggestion", 0);
 
@@ -119,6 +125,9 @@ public class SourceCodeServlet extends HttpServlet {
             if (nextSuggestion.getLine() != -1) {
                 
                 String newSource = Algorithm.UtilsF.correctCode(source, nextSuggestion);
+                System.out.println("--------------------");
+                System.out.println(nextSuggestion.getLine());
+                System.out.println("--------------------");
 
                 request.setAttribute("lastInput", newSource );
 
@@ -140,7 +149,7 @@ public class SourceCodeServlet extends HttpServlet {
                 request.setAttribute("improveCode", null);
             }
 
-            request.setAttribute("currentSuggestion", -1);
+            request.setAttribute("currentSuggestion", currentSuggestion);
         } // There are no more suggestions
         else if (currentSuggestion + 1 >= suggestions.size()) {
 
